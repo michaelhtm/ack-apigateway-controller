@@ -25,15 +25,16 @@ import (
 // Represents an API resource.
 type ResourceSpec struct {
 
-	// The parent resource's identifier.
-	ParentID  *string                                  `json:"parentID,omitempty"`
-	ParentRef *ackv1alpha1.AWSResourceReferenceWrapper `json:"parentRef,omitempty"`
-	// The last path segment for this resource.
-	// +kubebuilder:validation:Required
-	PathPart *string `json:"pathPart"`
-	// The string identifier of the associated RestApi.
-	RestAPIID  *string                                  `json:"restAPIID,omitempty"`
-	RestAPIRef *ackv1alpha1.AWSResourceReferenceWrapper `json:"restAPIRef,omitempty"`
+// The parent resource's identifier.
+ParentID *string `json:"parentID,omitempty"`
+ParentRef *ackv1alpha1.AWSResourceReferenceWrapper `json:"parentRef,omitempty"`
+// The last path segment for this resource.
+// +kubebuilder:validation:Required
+PathPart *string `json:"pathPart"`
+// The string identifier of the associated RestApi.
+// +kubebuilder:validation:XValidation:rule="self == oldSelf",message="Value is immutable once set"
+RestAPIID *string `json:"restAPIID,omitempty"`
+RestAPIRef *ackv1alpha1.AWSResourceReferenceWrapper `json:"restAPIRef,omitempty"`
 }
 
 // ResourceStatus defines the observed state of Resource
@@ -43,7 +44,7 @@ type ResourceStatus struct {
 	// constructed ARN for the resource
 	// +kubebuilder:validation:Optional
 	ACKResourceMetadata *ackv1alpha1.ResourceMetadata `json:"ackResourceMetadata"`
-	// All CRS managed by ACK have a common `Status.Conditions` member that
+	// All CRs managed by ACK have a common `Status.Conditions` member that
 	// contains a collection of `ackv1alpha1.Condition` objects that describe
 	// the various terminal states of the CR and its backend AWS service API
 	// resource
@@ -63,8 +64,8 @@ type ResourceStatus struct {
 type Resource struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ResourceSpec   `json:"spec,omitempty"`
-	Status            ResourceStatus `json:"status,omitempty"`
+	Spec   ResourceSpec   `json:"spec,omitempty"`
+	Status ResourceStatus `json:"status,omitempty"`
 }
 
 // ResourceList contains a list of Resource
@@ -72,7 +73,7 @@ type Resource struct {
 type ResourceList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Resource `json:"items"`
+	Items []Resource `json:"items"`
 }
 
 func init() {

@@ -26,20 +26,21 @@ import (
 // Private Cloud (VPC).
 type VPCLinkSpec struct {
 
-	// The description of the VPC link.
-	Description *string `json:"description,omitempty"`
-	// The name used to label and identify the VPC link.
-	// +kubebuilder:validation:Required
-	Name *string `json:"name"`
-	// The key-value map of strings. The valid character set is [a-zA-Z+-=._:/].
-	// The tag key can be up to 128 characters and must not start with aws:. The
-	// tag value can be up to 256 characters.
-	Tags map[string]*string `json:"tags,omitempty"`
-	// The ARN of the network load balancer of the VPC targeted by the VPC link.
-	// The network load balancer must be owned by the same Amazon Web Services account
-	// of the API owner.
-	// +kubebuilder:validation:Required
-	TargetARNs []*string `json:"targetARNs"`
+// The description of the VPC link.
+Description *string `json:"description,omitempty"`
+// The name used to label and identify the VPC link.
+// +kubebuilder:validation:Required
+Name *string `json:"name"`
+// The key-value map of strings. The valid character set is [a-zA-Z+-=._:/].
+// The tag key can be up to 128 characters and must not start with aws:. The
+// tag value can be up to 256 characters.
+Tags map[string]*string `json:"tags,omitempty"`
+// The ARN of the network load balancer of the VPC targeted by the VPC link.
+// The network load balancer must be owned by the same Amazon Web Services account
+// of the API owner.
+// +kubebuilder:validation:XValidation:rule="self == oldSelf",message="Value is immutable once set"
+// +kubebuilder:validation:Required
+TargetARNs []*string `json:"targetARNs"`
 }
 
 // VPCLinkStatus defines the observed state of VPCLink
@@ -49,19 +50,19 @@ type VPCLinkStatus struct {
 	// constructed ARN for the resource
 	// +kubebuilder:validation:Optional
 	ACKResourceMetadata *ackv1alpha1.ResourceMetadata `json:"ackResourceMetadata"`
-	// All CRS managed by ACK have a common `Status.Conditions` member that
+	// All CRs managed by ACK have a common `Status.Conditions` member that
 	// contains a collection of `ackv1alpha1.Condition` objects that describe
 	// the various terminal states of the CR and its backend AWS service API
 	// resource
 	// +kubebuilder:validation:Optional
 	Conditions []*ackv1alpha1.Condition `json:"conditions"`
 	// The identifier of the VpcLink. It is used in an Integration to reference
-	// this VpcLink.
+// this VpcLink.
 	// +kubebuilder:validation:Optional
 	ID *string `json:"id,omitempty"`
 	// The status of the VPC link. The valid values are AVAILABLE, PENDING, DELETING,
-	// or FAILED. Deploying an API will wait if the status is PENDING and will fail
-	// if the status is DELETING.
+// or FAILED. Deploying an API will wait if the status is PENDING and will fail
+// if the status is DELETING.
 	// +kubebuilder:validation:Optional
 	Status *string `json:"status,omitempty"`
 	// A description about the VPC link status.
@@ -75,8 +76,8 @@ type VPCLinkStatus struct {
 type VPCLink struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              VPCLinkSpec   `json:"spec,omitempty"`
-	Status            VPCLinkStatus `json:"status,omitempty"`
+	Spec   VPCLinkSpec   `json:"spec,omitempty"`
+	Status VPCLinkStatus `json:"status,omitempty"`
 }
 
 // VPCLinkList contains a list of VPCLink
@@ -84,7 +85,7 @@ type VPCLink struct {
 type VPCLinkList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []VPCLink `json:"items"`
+	Items []VPCLink `json:"items"`
 }
 
 func init() {
